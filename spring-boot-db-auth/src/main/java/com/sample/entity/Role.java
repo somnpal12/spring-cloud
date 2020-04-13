@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import java.util.List;
-
+ 
 @Entity(name = "ROLES")
 @NoArgsConstructor
 @AllArgsConstructor
