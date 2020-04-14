@@ -1,6 +1,7 @@
 package com.sample.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -13,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@EqualsAndHashCode(callSuper = false)
+@Data
 public class Permission extends BaseEntity {
     private String name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "permissions")
     private List<Role> roles;
 
 }
