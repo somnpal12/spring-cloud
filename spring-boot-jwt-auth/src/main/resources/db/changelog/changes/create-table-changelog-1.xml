@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="admin" id="1">
+        <createTable tableName="USERS">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="ROLES">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="PERMISSIONS">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="USER_ROLE">
+            <!--<column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>-->
+            <column name="user_id" type="INT">
+                <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_role_1" referencedTableName="USERS" referencedColumnNames="id"/>
+            </column>
+            <column name="role_id" type="INT">
+                <constraints nullable="false" primaryKey="true" foreignKeyName="fk_user_role_2" referencedTableName="ROLES" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <createTable tableName="ROLE_PERMISSION">
+           <!-- <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>-->
+            <column name="role_id" type="INT">
+                <constraints nullable="false" primaryKey="true" foreignKeyName="fk_role_permission_1" referencedTableName="ROLES" referencedColumnNames="id"/>
+            </column>
+            <column name="permission_id" type="INT">
+                <constraints nullable="false" primaryKey="true" foreignKeyName="fk_role_permission_2" referencedTableName="PERMISSIONS" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="USER"/>
+            <dropTable tableName="ROLES"/>
+            <dropTable tableName="PERMISSIONS"/>
+            <dropTable tableName="USER_ROLE"/>
+            <dropTable tableName="ROLE_PERMISSION"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
