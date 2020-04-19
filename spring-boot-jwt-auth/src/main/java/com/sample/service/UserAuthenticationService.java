@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,25 +27,30 @@ public class UserAuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.sample.entity.User user = userRepository.findByName(username);
 
+        if(Objects.nonNull(user)){
+            List<Permission> permissionList = user.getRoles()
+                    .stream()
+                    .map(Role::getPermissions)
+                    .flatMap(Collection::stream).collect(Collectors.toList());
 
-        List<Permission> permissionList = user.getRoles()
-                .stream()
-                .map(Role::getPermissions)
-                .flatMap(Collection::stream).collect(Collectors.toList());
+            List<SimpleGrantedAuthority> simpleGrantedAuthorities
+                    = permissionList.stream()
+                    .map(mappedSimpleGrantedAuthorityFunction)
+                    .distinct()
+                    .collect(Collectors.toList());
 
-        List<SimpleGrantedAuthority> simpleGrantedAuthorities
-                = permissionList.stream()
-                .map(mappedSimpleGrantedAuthorityFunction)
-                .distinct()
-                .collect(Collectors.toList());
-
-        if(user.getName().equals("user1")){
-            simpleGrantedAuthorities.add( new SimpleGrantedAuthority("ROLE_ADMIN"));
+            if(user.getName().equals("user1")){
+                simpleGrantedAuthorities.add( new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
+            return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), simpleGrantedAuthorities);
+        }else{
+            throw new UsernameNotFoundException(String.format("User %s doesn't exist in system.", username));
         }
+
 
         /*return  AuthUser.builder().user(user).simpleGrantedAuthorities(simpleGrantedAuthorities).build();*/
 
-        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), simpleGrantedAuthorities);
+
     }
 
     Function<Permission, SimpleGrantedAuthority> mappedSimpleGrantedAuthorityFunction = permission -> new SimpleGrantedAuthority(permission.getName());
